@@ -20,6 +20,11 @@ data class FullHours(
     override val minutes: Int,
 ) : Hours
 
+data class HalfHours(
+    override val hours: Int,
+    override val minutes: Int,
+) : Hours
+
 data class AMPMHours(
     override val hours: Int,
     override val minutes: Int,
@@ -38,6 +43,7 @@ fun HoursNumberPicker(
     leadingZero: Boolean = true,
     hoursRange: Iterable<Int> = when (value) {
         is FullHours -> (0..23)
+        is HalfHours -> (0..12)
         is AMPMHours -> (1..12)
     },
     minutesRange: Iterable<Int> = (0..59),
@@ -48,6 +54,19 @@ fun HoursNumberPicker(
     textStyle: TextStyle = LocalTextStyle.current,
 ) {
     when (value) {
+        is HalfHours ->
+            HalfHoursNumberPicker(
+                modifier = modifier,
+                value = value,
+                leadingZero = leadingZero,
+                hoursRange = hoursRange,
+                minutesRange = minutesRange,
+                hoursDivider = hoursDivider,
+                minutesDivider = minutesDivider,
+                onValueChange = onValueChange,
+                dividersColor = dividersColor,
+                textStyle = textStyle,
+            )
         is FullHours ->
             FullHoursNumberPicker(
                 modifier = modifier,
@@ -74,6 +93,57 @@ fun HoursNumberPicker(
                 dividersColor = dividersColor,
                 textStyle = textStyle,
             )
+    }
+}
+
+@Composable
+fun HalfHoursNumberPicker(
+    modifier: Modifier = Modifier,
+    value: HalfHours,
+    leadingZero: Boolean = true,
+    hoursRange: Iterable<Int>,
+    minutesRange: Iterable<Int> = (0..59),
+    hoursDivider: (@Composable () -> Unit)? = null,
+    minutesDivider: (@Composable () -> Unit)? = null,
+    onValueChange: (Hours) -> Unit,
+    dividersColor: Color = MaterialTheme.colors.primary,
+    textStyle: TextStyle = LocalTextStyle.current,
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        NumberPicker(
+            modifier = Modifier.weight(1f),
+            label = {
+                "${if (leadingZero && abs(it) < 10) "0" else ""}$it"
+            },
+            value = value.hours,
+            onValueChange = {
+                onValueChange(value.copy(hours = it))
+            },
+            dividersColor = dividersColor,
+            textStyle = textStyle,
+            range = hoursRange
+        )
+
+        hoursDivider?.invoke()
+
+        NumberPicker(
+            modifier = Modifier.weight(1f),
+            label = {
+                "${if (leadingZero && abs(it) < 10) "0" else ""}$it"
+            },
+            value = value.minutes,
+            onValueChange = {
+                onValueChange(value.copy(minutes = it))
+            },
+            dividersColor = dividersColor,
+            textStyle = textStyle,
+            range = minutesRange
+        )
+
+        minutesDivider?.invoke()
     }
 }
 

@@ -20,3 +20,6 @@ repositories {
     google()
     mavenCentral()
 }
+android {
+    namespace = "com.chargemap.compose.numberpicker"
+}

@@ -22,6 +22,7 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = Versions.compose
     }
+    namespace = "com.chargemap.android.sample"
 }
 
 dependencies {
